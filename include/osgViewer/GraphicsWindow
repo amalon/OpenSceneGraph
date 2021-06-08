@@ -190,6 +190,9 @@ class OSGVIEWER_EXPORT GraphicsWindow : public osg::GraphicsContext, public osgG
           * Pure virtual - must be implemented by concrete implementations of GraphicsContext. */
         virtual void swapBuffersImplementation()  { osg::notify(osg::NOTICE)<<"GraphicsWindow:: swapBuffersImplementation() not implemented."<<std::endl; }
 
+        /** Create an OpenGL graphics binding for OpenXR. */
+        virtual size_t getXrGraphicsBinding(void *) { osg::notify(osg::NOTICE)<<"GraphicsWindow::getXrGraphicsBinding() not implemented." << std::endl; return 0; }
+
     public:
 
         typedef std::list<osgViewer::View*> Views;

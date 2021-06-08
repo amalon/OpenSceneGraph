@@ -97,6 +97,9 @@ class OSGVIEWER_EXPORT GraphicsWindowX11 : public osgViewer::GraphicsWindow, pub
 
         /** Swap the front and back buffers.*/
         virtual void swapBuffersImplementation();
+
+        /** Create an OpenGL graphics binding for OpenXR.*/
+        virtual size_t getXrGraphicsBinding(void *buf);
         
         /** Check to see if any events have been generated.*/
         virtual bool checkEvents();

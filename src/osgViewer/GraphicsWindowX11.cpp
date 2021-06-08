@@ -42,6 +42,12 @@
 #include <X11/extensions/Xinerama.h>
 #endif
 
+#ifdef OSGVIEWER_USE_OPENXR
+#define XR_USE_GRAPHICS_API_OPENGL
+#define XR_USE_PLATFORM_XLIB
+#include <openxr/openxr_platform.h>
+#endif
+
 #include <unistd.h>
 #include <cstdlib>
 
@@ -1337,6 +1343,32 @@ void GraphicsWindowX11::swapBuffersImplementation()
             }
         }
     }
+}
+
+size_t GraphicsWindowX11::getXrGraphicsBinding(void *buf)
+{
+#ifdef OSGVIEWER_USE_OPENXR
+    if (!valid())
+    {
+        OSG_NOTICE << "GraphicsWindowX11::getXrGraphicsBinding(): Window not valid." << std::endl;
+        return 0;
+    }
+
+    if (buf)
+    {
+        auto *binding = reinterpret_cast<XrGraphicsBindingOpenGLXlibKHR*>(buf);
+        *binding = { XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR };
+        binding->xDisplay = getDisplay();
+        binding->visualid = _visualInfo->visualid;
+        binding->glxFBConfig = _fbConfig;
+        binding->glxDrawable = _window;
+        binding->glxContext = _context;
+    }
+    return sizeof(XrGraphicsBindingOpenGLXlibKHR);
+#else
+    OSG_NOTICE << "GraphicsWindowX11::getXrGraphicsBinding(): OpenXR not enabled." << std::endl;
+    return 0;
+#endif
 }
 
 bool GraphicsWindowX11::checkEvents()

@@ -35,6 +35,7 @@
 #include <osgViewer/config/PanoramicSphericalDisplay>
 #include <osgViewer/config/WoWVxDisplay>
 #include <osgViewer/config/SingleWindow>
+#include <osgViewer/config/OpenXRDisplay>
 
 
 #include <sstream>
@@ -498,6 +499,29 @@ GraphicsWindowEmbedded* Viewer::setUpViewerAsEmbeddedInWindow(int x, int y, int 
 void Viewer::realize()
 {
     //OSG_INFO<<"Viewer::realize()"<<std::endl;
+    {
+        unsigned int vr = 0;
+        osg::getEnvVar("OSG_VR", vr);
+
+        if (vr)
+        {
+            float unitsPerMeter = 0.0f;
+            osg::getEnvVar("OSG_VR_UNITS_PER_METER", unitsPerMeter);
+
+            osg::ref_ptr<osgViewer::OpenXRDisplay> xr = new osgViewer::OpenXRDisplay("osgplanets", 1, osgViewer::OpenXRDisplay::HEAD_MOUNTED_DISPLAY);
+            xr->preferEnvBlendMode(osgViewer::OpenXRDisplay::OPAQUE);
+            if (unitsPerMeter > 0.0f)
+                xr->setUnitsPerMeter(unitsPerMeter);
+            xr->setValidationLayer(true);
+            apply(xr);
+
+            // Force single threaded to make sure that no other thread can use the GL context
+            setThreadingModel(osgViewer::Viewer::SingleThreaded);
+
+            OSG_WARN<<"Setting up VR"<<std::endl;
+        }
+    }
+
 
     Contexts contexts;
     getContexts(contexts);

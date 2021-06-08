@@ -253,6 +253,21 @@ ELSE()
     ENDIF()
 ENDIF()
 
+FIND_PACKAGE(OpenXR)
+
+IF(OpenXR_FOUND)
+    ADD_DEFINITIONS(-DOSGVIEWER_USE_OPENXR)
+
+    SET(LIB_COMMON_FILES ${LIB_COMMON_FILES}
+        OpenXR/Compositor.cpp
+        OpenXR/Instance.cpp
+        OpenXR/Session.cpp
+        OpenXR/Swapchain.cpp
+        OpenXR/System.cpp
+    )
+
+    SET(LIB_EXTRA_LIBS OpenXR::openxr_loader ${LIB_EXTRA_LIBS})
+ENDIF()
 
 SET(TARGET_SRC
     ${LIB_PRIVATE_HEADERS}
